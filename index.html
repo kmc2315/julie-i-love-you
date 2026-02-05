@@ -73,7 +73,6 @@
     .btn:active{ transform: scale(.98); }
     .btn:hover{ filter: brightness(1.03); }
 
-    /* floating surprise */
     .floaty{
       position:absolute;
       left:50%;
@@ -95,8 +94,6 @@
     .floaty .text{
       font-size:22px;
       font-weight:900;
-      text-align:center;
-      letter-spacing:-0.01em;
       background:#ffffff10;
       border:1px solid #ffffff1a;
       padding:8px 12px;
@@ -107,7 +104,7 @@
 
     @keyframes floatUp{
       0%   { opacity:0; transform: translate(-50%, 6px) scale(.92); }
-      15%  { opacity:1; transform: translate(-50%, 0px) scale(1); }
+      15%  { opacity:1; }
       70%  { opacity:1; transform: translate(-50%, -90px) scale(1.05); }
       100% { opacity:0; transform: translate(-50%, -130px) scale(1.08); }
     }
@@ -118,19 +115,15 @@
 
     .tiny-heart{
       position:fixed;
-      left:50%;
-      top:50%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
+      font-size:20px;
       opacity:0;
       pointer-events:none;
-      animation: tinyFloat 1.0s ease forwards;
-      filter: drop-shadow(0 10px 14px rgba(0,0,0,.2));
+      animation: tinyFloat 1s ease forwards;
     }
     @keyframes tinyFloat{
-      0% { opacity:0; transform: translate(-50%, 0) scale(.9); }
+      0% { opacity:0; transform: translateY(0) scale(.9); }
       15%{ opacity:1; }
-      100%{ opacity:0; transform: translate(calc(-50% + var(--dx)), -120px) scale(1.25); }
+      100%{ opacity:0; transform: translateY(-120px) scale(1.25); }
     }
 
     .counter{
@@ -138,24 +131,45 @@
       font-size:13px;
       color: var(--muted);
     }
+
+    .message{
+      margin-top:8px;
+      font-size:14px;
+      font-weight:600;
+      color:#ffffffcc;
+      min-height:20px;
+    }
   </style>
 </head>
 <body>
   <main class="card">
     <h1>Julie ❤️</h1>
-    <p>Tap for a surprise.</p>
+    <p>Whenever you need a reminder!</p>
 
     <div class="btn-wrap" id="wrap">
       <button class="btn" id="btn">Tap for a surprise</button>
     </div>
 
     <div class="counter" id="counter">Pressed 0 times</div>
+    <div class="message" id="message">—</div>
   </main>
 
   <script>
     const btn = document.getElementById("btn");
     const wrap = document.getElementById("wrap");
     const counterEl = document.getElementById("counter");
+    const messageEl = document.getElementById("message");
+
+    const messages = [
+      "I’m so proud of you.",
+      "You’re doing better than you think.",
+      "You make my days brighter.",
+      "You are deeply loved.",
+      "I believe in you.",
+      "You’re my favorite person.",
+      "You don’t have to do everything alone.",
+      "I’m always on your team."
+    ];
 
     let count = Number(localStorage.getItem("love_count") || 0);
     updateCounter();
@@ -165,6 +179,9 @@
       localStorage.setItem("love_count", String(count));
       updateCounter();
 
+      messageEl.textContent =
+        messages[Math.floor(Math.random() * messages.length)];
+
       const floaty = document.createElement("div");
       floaty.className = "floaty";
       floaty.innerHTML = `
@@ -173,25 +190,11 @@
       `;
       wrap.appendChild(floaty);
       floaty.addEventListener("animationend", () => floaty.remove());
-
-      const rect = btn.getBoundingClientRect();
-      const originX = rect.left + rect.width / 2;
-      const originY = rect.top + rect.height / 2;
-
-      for (let i = 0; i < 5; i++) {
-        const h = document.createElement("div");
-        h.className = "tiny-heart";
-        h.textContent = "❤️";
-        h.style.left = originX + "px";
-        h.style.top = originY + "px";
-        h.style.setProperty("--dx", (Math.random() * 160 - 80).toFixed(0) + "px");
-        document.body.appendChild(h);
-        h.addEventListener("animationend", () => h.remove());
-      }
     });
 
     function updateCounter(){
-      counterEl.textContent = `Pressed ${count} ${count === 1 ? "time" : "times"}`;
+      counterEl.textContent =
+        `Pressed ${count} ${count === 1 ? "time" : "times"}`;
     }
   </script>
 </body>
